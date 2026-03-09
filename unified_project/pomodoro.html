@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pomodoro Timer – EduNexus</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-content">
+    <header class="topbar" id="topbar"></header>
+
+    <main class="page-content">
+      <div class="section-header">
+        <h2><i class="bi bi-stopwatch-fill me-2 text-primary-en"></i>Pomodoro Timer</h2>
+        <p>Stay focused with timed study sessions and structured breaks. 25 min work, 5 min break.</p>
+      </div>
+
+      <div class="row g-4">
+        <!-- Main Timer -->
+        <div class="col-12 col-lg-7">
+          <div class="en-card">
+            <div class="en-card-body p-0">
+              <div class="pomodoro-wrap">
+                <!-- Mode Tabs -->
+                <div class="mode-tabs">
+                  <button class="mode-tab active" id="tabFocus"  onclick="switchMode('focus')">Focus</button>
+                  <button class="mode-tab"         id="tabShort" onclick="switchMode('short')">Short Break</button>
+                  <button class="mode-tab"         id="tabLong"  onclick="switchMode('long')">Long Break</button>
+                </div>
+
+                <!-- Current task label -->
+                <div class="mb-3 text-center">
+                  <span id="currentTaskBadge" class="badge-en badge-primary" style="font-size:.82rem;cursor:pointer;" onclick="editTask()">
+                    <i class="bi bi-pencil-fill me-1"></i><span id="currentTaskName">Click to set task name</span>
+                  </span>
+                </div>
+
+                <!-- Ring Timer -->
+                <div class="timer-ring-container">
+                  <svg class="timer-ring-svg" viewBox="0 0 240 240">
+                    <defs>
+                      <linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%"   stop-color="#1a56db"/>
+                        <stop offset="100%" stop-color="#4f86f7"/>
+                      </linearGradient>
+                      <linearGradient id="breakGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%"   stop-color="#0fa968"/>
+                        <stop offset="100%" stop-color="#34d399"/>
+                      </linearGradient>
+                    </defs>
+                    <circle class="timer-ring-bg" cx="120" cy="120" r="104"/>
+                    <circle class="timer-ring-progress" id="timerRing"
+                            cx="120" cy="120" r="104"
+                            stroke-dasharray="653.45"
+                            stroke-dashoffset="0"/>
+                  </svg>
+                  <div class="timer-display">
+                    <div class="timer-time" id="timerDisplay">25:00</div>
+                    <div class="timer-label" id="timerModeLabel">FOCUS TIME</div>
+                  </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="timer-controls">
+                  <button class="timer-btn timer-btn-start" id="startBtn" onclick="startTimer()">
+                    <i class="bi bi-play-fill" id="startIcon"></i>
+                    <span id="startBtnText">Start</span>
+                  </button>
+                  <button class="timer-btn timer-btn-pause" id="pauseBtn" onclick="pauseTimer()" style="display:none;">
+                    <i class="bi bi-pause-fill"></i> Pause
+                  </button>
+                  <button class="timer-btn timer-btn-reset" onclick="resetTimer()">
+                    <i class="bi bi-arrow-counterclockwise"></i> Reset
+                  </button>
+                </div>
+
+                <!-- Session dots -->
+                <div style="font-size:.78rem;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:10px;text-transform:uppercase;">
+                  Sessions Completed
+                </div>
+                <div class="sessions-grid" id="sessionDots"></div>
+
+                <!-- Motivational quote -->
+                <div id="quoteBox" class="text-center mt-2 px-4" style="font-size:.85rem;color:var(--text-muted);font-style:italic;max-width:320px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="col-12 col-lg-5">
+          <!-- Today's Stats -->
+          <div class="en-card mb-4">
+            <div class="en-card-header">
+              <h5><i class="bi bi-calendar-day-fill me-2 text-primary-en"></i>Today's Stats</h5>
+            </div>
+            <div class="en-card-body">
+              <div class="row g-3 text-center">
+                <div class="col-4">
+                  <div style="font-size:2rem;font-weight:900;color:var(--primary);" id="statSessions">0</div>
+                  <div style="font-size:.72rem;color:var(--text-muted);font-weight:600;">Sessions</div>
+                </div>
+                <div class="col-4">
+                  <div style="font-size:2rem;font-weight:900;color:#0fa968;" id="statMinutes">0</div>
+                  <div style="font-size:.72rem;color:var(--text-muted);font-weight:600;">Minutes</div>
+                </div>
+                <div class="col-4">
+                  <div style="font-size:2rem;font-weight:900;color:#7c3aed;" id="statStreak">0</div>
+                  <div style="font-size:.72rem;color:var(--text-muted);font-weight:600;">Day Streak</div>
+                </div>
+              </div>
+              <div class="en-progress mt-3">
+                <div class="en-progress-bar" id="dailyGoalBar" style="width:0%;"></div>
+              </div>
+              <div style="font-size:.76rem;color:var(--text-muted);margin-top:4px;" id="dailyGoalLabel">
+                0 / 8 daily Pomodoros
+              </div>
+            </div>
+          </div>
+
+          <!-- Settings -->
+          <div class="en-card mb-4">
+            <div class="en-card-header">
+              <h5><i class="bi bi-sliders me-2 text-primary-en"></i>Timer Settings</h5>
+            </div>
+            <div class="en-card-body">
+              <div class="en-form-group">
+                <label class="en-label">Focus Duration (minutes)</label>
+                <input type="number" class="en-input" id="focusDur" value="25" min="1" max="60"
+                       onchange="updateSettings()" />
+              </div>
+              <div class="en-form-group">
+                <label class="en-label">Short Break (minutes)</label>
+                <input type="number" class="en-input" id="shortDur" value="5" min="1" max="30"
+                       onchange="updateSettings()" />
+              </div>
+              <div class="en-form-group mb-0">
+                <label class="en-label">Long Break (minutes)</label>
+                <input type="number" class="en-input" id="longDur" value="15" min="5" max="60"
+                       onchange="updateSettings()" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Session Log -->
+          <div class="en-card">
+            <div class="en-card-header">
+              <h5><i class="bi bi-journal-text me-2 text-primary-en"></i>Session Log</h5>
+              <button class="btn-en btn-en-outline btn-en-sm" onclick="clearLog()">Clear</button>
+            </div>
+            <div class="en-card-body p-0" id="sessionLog">
+              <div class="empty-state py-4">
+                <i class="bi bi-journal d-block"></i>
+                <p style="font-size:.82rem;">Completed sessions will appear here.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Technique Guide -->
+      <div class="row g-4 mt-0">
+        <div class="col-12">
+          <div class="en-card">
+            <div class="en-card-header">
+              <h5><i class="bi bi-book-fill me-2 text-primary-en"></i>The Pomodoro Technique — How It Works</h5>
+            </div>
+            <div class="en-card-body">
+              <div class="row g-3">
+                <div class="col-6 col-md-3">
+                  <div class="text-center p-3 rounded-3" style="background:#e8f0fe;">
+                    <div style="font-size:2rem;margin-bottom:8px;">🎯</div>
+                    <div style="font-weight:700;font-size:.88rem;color:#1a56db;margin-bottom:4px;">Step 1: Choose Task</div>
+                    <div style="font-size:.78rem;color:var(--text-muted);">Pick one task to focus on during your session.</div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="text-center p-3 rounded-3" style="background:#d1fae5;">
+                    <div style="font-size:2rem;margin-bottom:8px;">⏱️</div>
+                    <div style="font-weight:700;font-size:.88rem;color:#065f46;margin-bottom:4px;">Step 2: Work 25 min</div>
+                    <div style="font-size:.78rem;color:var(--text-muted);">Focus deeply. No distractions for 25 minutes.</div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="text-center p-3 rounded-3" style="background:#fef3c7;">
+                    <div style="font-size:2rem;margin-bottom:8px;">☕</div>
+                    <div style="font-weight:700;font-size:.88rem;color:#92400e;margin-bottom:4px;">Step 3: Short Break</div>
+                    <div style="font-size:.78rem;color:var(--text-muted);">Take 5 minutes to relax and recharge.</div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="text-center p-3 rounded-3" style="background:#ede9fe;">
+                    <div style="font-size:2rem;margin-bottom:8px;">🔄</div>
+                    <div style="font-weight:700;font-size:.88rem;color:#5b21b6;margin-bottom:4px;">Step 4: Repeat × 4</div>
+                    <div style="font-size:.78rem;color:var(--text-muted);">After 4 sessions, take a long 15-min break.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+  initLayout('pomodoro', 'Pomodoro Timer', 'EduNexus / Pomodoro Timer');
+
+  const QUOTES = [
+    "The secret of getting ahead is getting started. – Mark Twain",
+    "Focus is the art of knowing what to ignore.",
+    "Deep work is the superpower of the 21st century.",
+    "One session at a time. Consistency beats intensity.",
+    "Progress, not perfection. Keep going!",
+    "Your future self will thank you for studying today.",
+    "Excellence is not a destination but a continuous journey.",
+  ];
+
+  let MODES = { focus: 25, short: 5, long: 15 };
+  let currentMode  = 'focus';
+  let timeLeft     = MODES.focus * 60;
+  let totalTime    = MODES.focus * 60;
+  let timerRunning = false;
+  let intervalId   = null;
+  let completedSessions = 0;
+  let totalMinutes = 0;
+  let sessionLog   = [];
+  let currentTask  = 'Click to set task name';
+
+  const CIRCUMFERENCE = 2 * Math.PI * 104; // 653.45
+
+  function updateRing(seconds, total) {
+    const progress = 1 - (seconds / total);
+    const offset = CIRCUMFERENCE * (1 - progress);
+    document.getElementById('timerRing').style.strokeDashoffset = offset;
+    document.getElementById('timerRing').setAttribute('stroke', `url(#${currentMode==='focus'?'timerGrad':'breakGrad'})`);
+  }
+
+  function formatTime(s) {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  }
+
+  function renderDisplay() {
+    document.getElementById('timerDisplay').textContent = formatTime(timeLeft);
+    document.title = `${formatTime(timeLeft)} – EduNexus`;
+    updateRing(timeLeft, totalTime);
+  }
+
+  function startTimer() {
+    if (timerRunning) return;
+    timerRunning = true;
+    document.getElementById('startBtn').style.display  = 'none';
+    document.getElementById('pauseBtn').style.display  = 'flex';
+    document.getElementById('quoteBox').textContent    = QUOTES[Math.floor(Math.random()*QUOTES.length)];
+
+    intervalId = setInterval(() => {
+      if (timeLeft <= 0) {
+        clearInterval(intervalId);
+        timerRunning = false;
+        onSessionComplete();
+        return;
+      }
+      timeLeft--;
+      renderDisplay();
+    }, 1000);
+  }
+
+  function pauseTimer() {
+    clearInterval(intervalId);
+    timerRunning = false;
+    document.getElementById('startBtn').style.display  = 'flex';
+    document.getElementById('startBtnText').textContent= 'Resume';
+    document.getElementById('pauseBtn').style.display  = 'none';
+  }
+
+  function resetTimer() {
+    clearInterval(intervalId);
+    timerRunning = false;
+    timeLeft = totalTime = MODES[currentMode] * 60;
+    document.getElementById('startBtn').style.display   = 'flex';
+    document.getElementById('startBtnText').textContent  = 'Start';
+    document.getElementById('pauseBtn').style.display   = 'none';
+    document.getElementById('quoteBox').textContent     = '';
+    document.title = 'Pomodoro Timer – EduNexus';
+    renderDisplay();
+  }
+
+  function onSessionComplete() {
+    document.getElementById('startBtn').style.display   = 'flex';
+    document.getElementById('startBtnText').textContent  = 'Start';
+    document.getElementById('pauseBtn').style.display   = 'none';
+
+    if (currentMode === 'focus') {
+      completedSessions++;
+      const dur = MODES.focus;
+      totalMinutes += dur;
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('en-US',{ hour:'2-digit', minute:'2-digit' });
+      sessionLog.unshift({ task: currentTask, duration: dur, time: timeStr, mode: 'Focus' });
+      updateStats();
+      renderSessionLog();
+      showToast(`🎉 Session complete! Take a ${completedSessions%4===0?'long':'short'} break.`);
+      // Auto suggest break
+      setTimeout(() => {
+        if (completedSessions % 4 === 0) switchMode('long');
+        else switchMode('short');
+      }, 800);
+    } else {
+      showToast('Break over! Ready to focus again?');
+      setTimeout(() => switchMode('focus'), 800);
+    }
+    renderDots();
+  }
+
+  function switchMode(mode) {
+    clearInterval(intervalId);
+    timerRunning = false;
+    currentMode  = mode;
+    timeLeft = totalTime = MODES[mode] * 60;
+    document.getElementById('startBtn').style.display   = 'flex';
+    document.getElementById('startBtnText').textContent  = 'Start';
+    document.getElementById('pauseBtn').style.display   = 'none';
+
+    const labels = { focus:'FOCUS TIME', short:'SHORT BREAK', long:'LONG BREAK' };
+    document.getElementById('timerModeLabel').textContent = labels[mode];
+
+    ['tabFocus','tabShort','tabLong'].forEach(id => document.getElementById(id).classList.remove('active'));
+    document.getElementById(mode==='focus'?'tabFocus':mode==='short'?'tabShort':'tabLong').classList.add('active');
+
+    renderDisplay();
+  }
+
+  function updateSettings() {
+    MODES.focus = parseInt(document.getElementById('focusDur').value) || 25;
+    MODES.short = parseInt(document.getElementById('shortDur').value) || 5;
+    MODES.long  = parseInt(document.getElementById('longDur').value)  || 15;
+    if (!timerRunning) {
+      timeLeft = totalTime = MODES[currentMode] * 60;
+      renderDisplay();
+    }
+    showToast('Settings updated!');
+  }
+
+  function updateStats() {
+    document.getElementById('statSessions').textContent = completedSessions;
+    document.getElementById('statMinutes').textContent  = totalMinutes;
+    document.getElementById('statStreak').textContent   = completedSessions > 0 ? 3 : 0; // demo
+    const pct = Math.min(100, Math.round((completedSessions / 8) * 100));
+    document.getElementById('dailyGoalBar').style.width   = pct + '%';
+    document.getElementById('dailyGoalLabel').textContent = `${completedSessions} / 8 daily Pomodoros`;
+  }
+
+  function renderDots() {
+    const total = 8;
+    document.getElementById('sessionDots').innerHTML = Array.from({length:total}, (_,i) => `
+      <div class="session-dot ${i < completedSessions ? 'done' : ''}">
+        ${i < completedSessions ? '<i class="bi bi-check-lg"></i>' : (i+1)}
+      </div>
+    `).join('');
+  }
+
+  function renderSessionLog() {
+    if (sessionLog.length === 0) {
+      document.getElementById('sessionLog').innerHTML = `
+        <div class="empty-state py-4">
+          <i class="bi bi-journal d-block"></i>
+          <p style="font-size:.82rem;">Completed sessions will appear here.</p>
+        </div>`;
+      return;
+    }
+    document.getElementById('sessionLog').innerHTML = sessionLog.slice(0,8).map((s,i) => `
+      <div class="d-flex align-items-center gap-3 px-4 py-3 ${i < sessionLog.length-1 ? 'border-bottom' : ''}">
+        <div class="activity-icon" style="background:#e8f0fe;color:#1a56db;width:36px;height:36px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+          <i class="bi bi-stopwatch-fill"></i>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:600;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.task}</div>
+          <div style="font-size:.74rem;color:var(--text-muted);">${s.duration} min • ${s.time}</div>
+        </div>
+        <span class="badge-en badge-primary" style="flex-shrink:0;">#${sessionLog.length - i}</span>
+      </div>
+    `).join('');
+  }
+
+  function clearLog() {
+    sessionLog = [];
+    renderSessionLog();
+    showToast('Session log cleared.', 'warning');
+  }
+
+  function editTask() {
+    const n = prompt('Enter the task name for this Pomodoro session:', currentTask === 'Click to set task name' ? '' : currentTask);
+    if (n !== null && n.trim()) {
+      currentTask = n.trim();
+      document.getElementById('currentTaskName').textContent = currentTask;
+    }
+  }
+
+  // Init
+  renderDisplay();
+  renderDots();
+  updateStats();
+</script>
+</body>
+</html>

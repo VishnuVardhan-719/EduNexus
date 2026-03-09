@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CGPA Calculator – EduNexus</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-content">
+    <header class="topbar" id="topbar"></header>
+
+    <main class="page-content">
+      <div class="section-header">
+        <h2><i class="bi bi-calculator-fill me-2 text-primary-en"></i>CGPA Calculator</h2>
+        <p>Add your subjects with credits and grades to calculate your Cumulative Grade Point Average.</p>
+      </div>
+
+      <div class="row g-4">
+        <!-- Left: Subject Input -->
+        <div class="col-12 col-lg-7">
+          <div class="en-card">
+            <div class="en-card-header">
+              <h5><i class="bi bi-journal-plus me-2 text-primary-en"></i>Add Subjects</h5>
+              <button class="btn-en btn-en-primary btn-en-sm" id="addSubjectBtn">
+                <i class="bi bi-plus-lg"></i> Add Subject
+              </button>
+            </div>
+            <div class="en-card-body">
+              <!-- Grade scale info -->
+              <div class="mb-4 p-3 rounded-3" style="background:#e8f0fe;border:1px solid #c3d6fc;">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <i class="bi bi-info-circle-fill text-primary-en"></i>
+                  <span style="font-weight:700;font-size:.88rem;color:#1a56db;">Grade Point Scale (10-point system)</span>
+                </div>
+                <div class="d-flex flex-wrap gap-2" style="font-size:.75rem;">
+                  <span class="badge-en badge-success">O = 10</span>
+                  <span class="badge-en badge-primary">A+ = 9</span>
+                  <span class="badge-en badge-primary">A = 8</span>
+                  <span class="badge-en badge-warning">B+ = 7</span>
+                  <span class="badge-en badge-warning">B = 6</span>
+                  <span class="badge-en badge-muted">C = 5</span>
+                  <span class="badge-en badge-danger">F = 0</span>
+                </div>
+              </div>
+
+              <!-- Subjects Container -->
+              <div id="subjectsContainer"></div>
+
+              <!-- Buttons -->
+              <div class="d-flex gap-2 mt-3 flex-wrap">
+                <button class="btn-en btn-en-primary" id="calculateBtn">
+                  <i class="bi bi-calculator"></i> Calculate CGPA
+                </button>
+                <button class="btn-en btn-en-outline" id="clearBtn">
+                  <i class="bi bi-trash3"></i> Clear All
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Semester-wise CGPA -->
+          <div class="en-card mt-4">
+            <div class="en-card-header">
+              <h5><i class="bi bi-table me-2 text-primary-en"></i>Subject Summary</h5>
+            </div>
+            <div class="en-card-body p-0" id="summarySection" style="display:none;">
+              <div class="table-responsive">
+                <table class="en-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Subject</th>
+                      <th>Credits</th>
+                      <th>Grade</th>
+                      <th>Grade Points</th>
+                      <th>Weighted</th>
+                    </tr>
+                  </thead>
+                  <tbody id="summaryTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div id="emptySummary" class="empty-state">
+              <i class="bi bi-table d-block"></i>
+              <p>Add subjects and calculate CGPA to see the summary table.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Result + Info -->
+        <div class="col-12 col-lg-5">
+          <!-- CGPA Result -->
+          <div id="cgpaResultCard" class="cgpa-result mb-4" style="display:none;">
+            <div style="font-size:.85rem;opacity:.8;margin-bottom:8px;font-weight:600;letter-spacing:.5px;">CUMULATIVE GPA</div>
+            <div class="cgpa-number" id="cgpaNumber">0.00</div>
+            <div class="cgpa-label" id="cgpaLabel">Out of 10.00</div>
+            <div class="cgpa-desc" id="cgpaDesc"></div>
+            <div class="d-flex justify-content-center gap-4 mt-4 pt-3" style="border-top:1px solid rgba(255,255,255,0.25);">
+              <div>
+                <div style="font-size:1.4rem;font-weight:900;" id="totalCreditsDisp">0</div>
+                <div style="font-size:.75rem;opacity:.75;">Total Credits</div>
+              </div>
+              <div style="width:1px;background:rgba(255,255,255,.2);"></div>
+              <div>
+                <div style="font-size:1.4rem;font-weight:900;" id="totalSubjectsDisp">0</div>
+                <div style="font-size:.75rem;opacity:.75;">Subjects</div>
+              </div>
+              <div style="width:1px;background:rgba(255,255,255,.2);"></div>
+              <div>
+                <div style="font-size:1.4rem;font-weight:900;" id="percentileDisp">-</div>
+                <div style="font-size:.75rem;opacity:.75;">Percentile</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Placeholder when no result -->
+          <div id="cgpaPlaceholder" class="en-card mb-4">
+            <div class="empty-state py-5">
+              <i class="bi bi-calculator d-block"></i>
+              <p class="fw-600">Your CGPA will appear here after calculation.</p>
+            </div>
+          </div>
+
+          <!-- Performance Class -->
+          <div class="en-card mb-4">
+            <div class="en-card-header">
+              <h5><i class="bi bi-trophy-fill me-2 text-warning-en"></i>Grade Classification</h5>
+            </div>
+            <div class="en-card-body p-0">
+              <table style="width:100%;border-collapse:collapse;" class="en-table">
+                <thead>
+                  <tr><th>CGPA Range</th><th>Classification</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                  <tr id="row-10"  ><td>10.00</td>         <td>Perfect / Outstanding</td><td><span class="badge-en badge-success">Distinction</span></td></tr>
+                  <tr id="row-9"   ><td>9.00 – 9.99</td>  <td>Exceptional</td>           <td><span class="badge-en badge-success">1st Class Hons.</span></td></tr>
+                  <tr id="row-8"   ><td>8.00 – 8.99</td>  <td>Excellent</td>             <td><span class="badge-en badge-primary">1st Class Hons.</span></td></tr>
+                  <tr id="row-7"   ><td>7.00 – 7.99</td>  <td>Very Good</td>             <td><span class="badge-en badge-primary">2nd Class</span></td></tr>
+                  <tr id="row-6"   ><td>6.00 – 6.99</td>  <td>Good</td>                 <td><span class="badge-en badge-warning">Pass</span></td></tr>
+                  <tr id="row-5"   ><td>5.00 – 5.99</td>  <td>Average</td>              <td><span class="badge-en badge-warning">Pass</span></td></tr>
+                  <tr id="row-low" ><td>Below 5.00</td>    <td>Below Average</td>        <td><span class="badge-en badge-danger">Needs Improvement</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tips -->
+          <div class="en-card">
+            <div class="en-card-header">
+              <h5><i class="bi bi-lightbulb-fill me-2 text-warning-en"></i>Tips to Improve</h5>
+            </div>
+            <div class="en-card-body">
+              <ul style="list-style:none;padding:0;margin:0;">
+                <li class="d-flex gap-2 mb-3"><i class="bi bi-check-circle-fill text-success-en mt-1"></i><span style="font-size:.88rem;">Focus on high-credit subjects — they impact CGPA more.</span></li>
+                <li class="d-flex gap-2 mb-3"><i class="bi bi-check-circle-fill text-success-en mt-1"></i><span style="font-size:.88rem;">Use the Pomodoro technique for consistent daily study.</span></li>
+                <li class="d-flex gap-2 mb-3"><i class="bi bi-check-circle-fill text-success-en mt-1"></i><span style="font-size:.88rem;">Track deadlines in the Study Planner.</span></li>
+                <li class="d-flex gap-2"><i class="bi bi-check-circle-fill text-success-en mt-1"></i><span style="font-size:.88rem;">Review Performance Analytics weekly to identify weak areas.</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+  initLayout('cgpa', 'CGPA Calculator', 'EduNexus / CGPA Calculator');
+
+  const GRADE_POINTS = { 'O':10, 'A+':9, 'A':8, 'B+':7, 'B':6, 'C':5, 'D':4, 'F':0 };
+  let subjectCount = 0;
+
+  const defaultSubjects = [
+    { name:'Data Structures & Algorithms', credits:4, grade:'A+' },
+    { name:'Database Management Systems',  credits:3, grade:'B+' },
+    { name:'Computer Networks',            credits:3, grade:'O'  },
+    { name:'Operating Systems',            credits:4, grade:'A'  },
+  ];
+
+  function createSubjectRow(data = {}) {
+    subjectCount++;
+    const id = subjectCount;
+    const div = document.createElement('div');
+    div.className = 'subject-row';
+    div.id = `subRow${id}`;
+    div.innerHTML = `
+      <button class="remove-subject" onclick="removeSubject(${id})" title="Remove subject">
+        <i class="bi bi-x-lg"></i>
+      </button>
+      <div class="row g-2 align-items-end">
+        <div class="col-12 col-sm-5">
+          <label class="en-label">Subject Name</label>
+          <input type="text" class="en-input sub-name" placeholder="e.g. Data Structures" value="${data.name||''}" />
+        </div>
+        <div class="col-6 col-sm-3">
+          <label class="en-label">Credits</label>
+          <input type="number" class="en-input sub-credits" min="1" max="6" value="${data.credits||''}" placeholder="1–6" />
+        </div>
+        <div class="col-6 col-sm-4">
+          <label class="en-label">Grade</label>
+          <select class="en-input en-select sub-grade">
+            <option value="">-- Grade --</option>
+            ${Object.keys(GRADE_POINTS).map(g => `<option ${data.grade===g?'selected':''} value="${g}">${g} (${GRADE_POINTS[g]})</option>`).join('')}
+          </select>
+        </div>
+      </div>
+    `;
+    document.getElementById('subjectsContainer').appendChild(div);
+  }
+
+  function removeSubject(id) {
+    const el = document.getElementById(`subRow${id}`);
+    if (el) el.remove();
+    showToast('Subject removed.', 'warning');
+  }
+
+  // Add default subjects
+  defaultSubjects.forEach(s => createSubjectRow(s));
+
+  document.getElementById('addSubjectBtn').addEventListener('click', () => {
+    createSubjectRow();
+    setTimeout(() => {
+      const rows = document.querySelectorAll('.subject-row');
+      rows[rows.length - 1].scrollIntoView({ behavior:'smooth', block:'center' });
+    }, 50);
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    document.getElementById('subjectsContainer').innerHTML = '';
+    document.getElementById('cgpaResultCard').style.display  = 'none';
+    document.getElementById('cgpaPlaceholder').style.display = 'block';
+    document.getElementById('summarySection').style.display  = 'none';
+    document.getElementById('emptySummary').style.display    = 'block';
+    clearHighlight();
+    showToast('All subjects cleared.', 'warning');
+  });
+
+  document.getElementById('calculateBtn').addEventListener('click', () => {
+    const rows    = document.querySelectorAll('.subject-row');
+    let totalWt   = 0, totalCr = 0;
+    const summaryRows = [];
+    let valid = true;
+
+    rows.forEach((row, i) => {
+      const name    = row.querySelector('.sub-name').value.trim() || `Subject ${i+1}`;
+      const credits = parseFloat(row.querySelector('.sub-credits').value);
+      const grade   = row.querySelector('.sub-grade').value;
+      if (!credits || !grade) { valid = false; return; }
+      const gp = GRADE_POINTS[grade];
+      totalWt += gp * credits;
+      totalCr += credits;
+      summaryRows.push({ name, credits, grade, gp, weighted:(gp*credits).toFixed(1) });
+    });
+
+    if (!valid || summaryRows.length === 0) {
+      showToast('Please fill in all subject details.', 'danger'); return;
+    }
+
+    const cgpa = (totalWt / totalCr).toFixed(2);
+    const desc = cgpa >= 9 ? 'Outstanding Performance!' :
+                 cgpa >= 8 ? 'Excellent Performance!'   :
+                 cgpa >= 7 ? 'Very Good Performance!'   :
+                 cgpa >= 6 ? 'Good Performance!'        :
+                 cgpa >= 5 ? 'Satisfactory Performance' :
+                             'Needs Improvement';
+    const percentile = cgpa >= 9 ? 'Top 5%' : cgpa >= 8 ? 'Top 15%' : cgpa >= 7 ? 'Top 35%' : cgpa >= 6 ? 'Top 60%' : 'Below avg';
+
+    document.getElementById('cgpaNumber').textContent       = cgpa;
+    document.getElementById('cgpaLabel').textContent        = 'Out of 10.00';
+    document.getElementById('cgpaDesc').textContent         = desc;
+    document.getElementById('totalCreditsDisp').textContent = totalCr;
+    document.getElementById('totalSubjectsDisp').textContent= summaryRows.length;
+    document.getElementById('percentileDisp').textContent   = percentile;
+
+    document.getElementById('cgpaResultCard').style.display  = 'block';
+    document.getElementById('cgpaPlaceholder').style.display = 'none';
+
+    // Summary table
+    document.getElementById('summaryTableBody').innerHTML = summaryRows.map((r, i) => `
+      <tr>
+        <td>${i+1}</td>
+        <td style="font-weight:600;">${r.name}</td>
+        <td>${r.credits}</td>
+        <td><span class="badge-en badge-primary">${r.grade}</span></td>
+        <td>${r.gp}</td>
+        <td style="font-weight:700;color:var(--primary);">${r.weighted}</td>
+      </tr>
+    `).join('') + `
+      <tr style="background:#f8faff;font-weight:700;">
+        <td colspan="2">Total</td>
+        <td>${totalCr}</td>
+        <td></td>
+        <td></td>
+        <td style="color:var(--primary);">${totalWt.toFixed(1)}</td>
+      </tr>`;
+    document.getElementById('summarySection').style.display = 'block';
+    document.getElementById('emptySummary').style.display   = 'none';
+
+    // Highlight grade row
+    clearHighlight();
+    const rowId = cgpa >= 10 ? 'row-10' : cgpa >= 9 ? 'row-9' : cgpa >= 8 ? 'row-8' : cgpa >= 7 ? 'row-7' : cgpa >= 6 ? 'row-6' : cgpa >= 5 ? 'row-5' : 'row-low';
+    const hRow = document.getElementById(rowId);
+    if (hRow) hRow.style.background = '#e8f0fe';
+
+    showToast(`CGPA calculated: ${cgpa}`);
+    document.getElementById('cgpaResultCard').scrollIntoView({ behavior:'smooth', block:'center' });
+  });
+
+  function clearHighlight() {
+    ['row-10','row-9','row-8','row-7','row-6','row-5','row-low'].forEach(id => {
+      const r = document.getElementById(id);
+      if (r) r.style.background = '';
+    });
+  }
+</script>
+</body>
+</html>

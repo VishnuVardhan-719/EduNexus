@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Performance Analytics – EduNexus</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-content">
+    <header class="topbar" id="topbar"></header>
+
+    <main class="page-content">
+      <div class="section-header">
+        <h2><i class="bi bi-bar-chart-fill me-2 text-primary-en"></i>Performance Analytics</h2>
+        <p>Visualize your academic performance across subjects and semesters.</p>
+      </div>
+
+      <!-- KPI Row -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+          <div class="stat-card c-blue">
+            <div class="stat-icon"><i class="bi bi-award-fill"></i></div>
+            <div class="stat-body">
+              <div class="stat-label">Cumulative GPA</div>
+              <div class="stat-value">3.74</div>
+              <div class="stat-change"><span class="up"><i class="bi bi-arrow-up"></i> +0.08</span> this sem</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="stat-card c-green">
+            <div class="stat-icon"><i class="bi bi-trophy-fill"></i></div>
+            <div class="stat-body">
+              <div class="stat-label">Best Subject</div>
+              <div class="stat-value" style="font-size:1.1rem;line-height:1.2;">Networks</div>
+              <div class="stat-change">Score: 92%</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="stat-card c-orange">
+            <div class="stat-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            <div class="stat-body">
+              <div class="stat-label">Needs Focus</div>
+              <div class="stat-value" style="font-size:1.1rem;line-height:1.2;">OS</div>
+              <div class="stat-change"><span class="down">Score: 68%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="stat-card c-purple">
+            <div class="stat-icon"><i class="bi bi-percent"></i></div>
+            <div class="stat-body">
+              <div class="stat-label">Avg. Score</div>
+              <div class="stat-value">80.2%</div>
+              <div class="stat-change"><span class="up"><i class="bi bi-arrow-up"></i>Top 20%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row 1 -->
+      <div class="row g-4 mb-4">
+        <!-- Bar Chart: Subject-wise performance -->
+        <div class="col-12 col-lg-7">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h5><i class="bi bi-bar-chart-line-fill me-2 text-primary-en"></i>Subject-wise Performance</h5>
+              <select class="en-input en-select" id="subjectView" style="width:auto;padding:5px 30px 5px 10px;font-size:.82rem;"
+                      onchange="updateBarChart(this.value)">
+                <option value="score">By Score (%)</option>
+                <option value="grade">By Grade Point</option>
+              </select>
+            </div>
+            <div class="chart-body">
+              <canvas id="subjectChart" height="230"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Radar / Spider Chart: Multi-dimensional -->
+        <div class="col-12 col-lg-5">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h5><i class="bi bi-pentagon-fill me-2 text-primary-en"></i>Competency Radar</h5>
+            </div>
+            <div class="chart-body">
+              <canvas id="radarChart" height="230"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row 2 -->
+      <div class="row g-4 mb-4">
+        <!-- Line Chart: CGPA trend -->
+        <div class="col-12 col-lg-8">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h5><i class="bi bi-graph-up-arrow me-2 text-primary-en"></i>CGPA Trend (Semester-wise)</h5>
+            </div>
+            <div class="chart-body">
+              <canvas id="cgpaTrendChart" height="180"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Doughnut: Grade distribution -->
+        <div class="col-12 col-lg-4">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h5><i class="bi bi-pie-chart-fill me-2 text-primary-en"></i>Grade Distribution</h5>
+            </div>
+            <div class="chart-body">
+              <canvas id="gradeDonut" height="160"></canvas>
+              <ul class="legend-list mt-3" id="donutLegend"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Study Hours + Detailed Table -->
+      <div class="row g-4">
+        <!-- Study hours line chart -->
+        <div class="col-12 col-lg-6">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h5><i class="bi bi-clock-history me-2 text-primary-en"></i>Weekly Study Hours</h5>
+            </div>
+            <div class="chart-body">
+              <canvas id="studyHoursChart" height="200"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subject detail table -->
+        <div class="col-12 col-lg-6">
+          <div class="chart-card h-100">
+            <div class="chart-header">
+              <h5><i class="bi bi-table me-2 text-primary-en"></i>Detailed Scorecard</h5>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="en-table">
+                <thead>
+                  <tr>
+                    <th>Subject</th>
+                    <th>Mid-term</th>
+                    <th>Final</th>
+                    <th>Score</th>
+                    <th>Grade</th>
+                    <th>Trend</th>
+                  </tr>
+                </thead>
+                <tbody id="scorecardBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+  initLayout('analytics', 'Performance Analytics', 'EduNexus / Analytics');
+
+  const SUBJECTS = ['DSA','DBMS','Networks','OS','SE','ML'];
+  const FULL_SUBJECTS = ['Data Structures','Database Mgmt','Computer Networks','Operating Systems','Software Engg.','Machine Learning'];
+  const SCORES  = [88, 75, 92, 68, 81, 77];
+  const GPA_PTS = [8.8,7.5,9.2,6.8,8.1,7.7];
+  const COLORS  = ['#1a56db','#7c3aed','#0fa968','#f59e0b','#ef4444','#06b6d4'];
+  const LIGHT   = ['#dbeafe','#ede9fe','#d1fae5','#fef3c7','#fee2e2','#cffafe'];
+
+  // Chart.js defaults
+  Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+  Chart.defaults.color = '#64748b';
+
+  /* ---- Bar Chart: Subject Performance ---- */
+  const subCtx = document.getElementById('subjectChart').getContext('2d');
+  let subjectChart = new Chart(subCtx, {
+    type: 'bar',
+    data: {
+      labels: SUBJECTS,
+      datasets: [{
+        label: 'Score (%)',
+        data: SCORES,
+        backgroundColor: COLORS.map(c => c + 'cc'),
+        borderColor: COLORS,
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: { legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y}%` } }
+      },
+      scales: {
+        y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' }, grid: { color:'#eaf0fb' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+
+  window.updateBarChart = function(view) {
+    if (view === 'grade') {
+      subjectChart.data.datasets[0].label = 'Grade Point';
+      subjectChart.data.datasets[0].data  = GPA_PTS;
+      subjectChart.options.scales.y.max   = 10;
+      subjectChart.options.plugins.tooltip.callbacks.label = ctx => ` ${ctx.parsed.y} / 10`;
+      subjectChart.options.scales.y.ticks.callback = v => v;
+    } else {
+      subjectChart.data.datasets[0].label = 'Score (%)';
+      subjectChart.data.datasets[0].data  = SCORES;
+      subjectChart.options.scales.y.max   = 100;
+      subjectChart.options.plugins.tooltip.callbacks.label = ctx => ` ${ctx.parsed.y}%`;
+      subjectChart.options.scales.y.ticks.callback = v => v + '%';
+    }
+    subjectChart.update();
+  };
+
+  /* ---- Radar Chart ---- */
+  new Chart(document.getElementById('radarChart').getContext('2d'), {
+    type: 'radar',
+    data: {
+      labels: SUBJECTS,
+      datasets: [{
+        label: 'Current Semester',
+        data: SCORES,
+        backgroundColor: 'rgba(26,86,219,0.12)',
+        borderColor: '#1a56db',
+        borderWidth: 2,
+        pointBackgroundColor: '#1a56db',
+        pointRadius: 4,
+      },{
+        label: 'Previous Semester',
+        data: [82,70,85,72,76,69],
+        backgroundColor: 'rgba(124,58,237,0.08)',
+        borderColor: '#7c3aed',
+        borderWidth: 2,
+        borderDash: [5,5],
+        pointBackgroundColor: '#7c3aed',
+        pointRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: { legend: { position:'bottom', labels:{ boxWidth:12, padding:12 } } },
+      scales: {
+        r: {
+          beginAtZero: true, max: 100, stepSize: 20,
+          grid: { color:'#eaf0fb' },
+          pointLabels: { font: { size: 11, weight:'600' } },
+          ticks: { callback: v => v + '%', font:{ size:9 } }
+        }
+      }
+    }
+  });
+
+  /* ---- CGPA Trend Line Chart ---- */
+  new Chart(document.getElementById('cgpaTrendChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: ['Sem 1','Sem 2','Sem 3','Sem 4','Sem 5 (Current)'],
+      datasets: [{
+        label: 'CGPA',
+        data: [3.20, 3.41, 3.55, 3.66, 3.74],
+        borderColor: '#1a56db',
+        backgroundColor: 'rgba(26,86,219,0.08)',
+        borderWidth: 3,
+        pointBackgroundColor: '#fff',
+        pointBorderColor: '#1a56db',
+        pointBorderWidth: 3,
+        pointRadius: 6,
+        tension: 0.4,
+        fill: true,
+      },{
+        label: 'Department Avg',
+        data: [3.10, 3.18, 3.22, 3.28, 3.30],
+        borderColor: '#7c3aed',
+        borderDash: [6,4],
+        borderWidth: 2,
+        pointBackgroundColor: '#7c3aed',
+        pointRadius: 4,
+        tension: 0.4,
+        fill: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: { legend: { position:'top', labels:{ boxWidth:12, padding:14 } } },
+      scales: {
+        y: { min: 2.5, max: 4.0, ticks:{ stepSize:0.25 }, grid:{ color:'#eaf0fb' } },
+        x: { grid:{ display:false } }
+      }
+    }
+  });
+
+  /* ---- Doughnut: Grade distribution ---- */
+  const gradeData = [
+    { label:'Outstanding (O)', value:1, color:'#0fa968' },
+    { label:'Excellent (A)',   value:2, color:'#1a56db' },
+    { label:'Very Good (B+)', value:2, color:'#7c3aed' },
+    { label:'Good (B)',        value:1, color:'#f59e0b' },
+  ];
+  new Chart(document.getElementById('gradeDonut').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: gradeData.map(d => d.label),
+      datasets: [{ data: gradeData.map(d => d.value), backgroundColor: gradeData.map(d => d.color), borderWidth:0, hoverOffset:8 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true, cutout:'65%',
+      plugins: { legend:{ display:false } }
+    }
+  });
+  document.getElementById('donutLegend').innerHTML = gradeData.map(d => `
+    <li class="legend-item">
+      <span class="legend-dot" style="background:${d.color};"></span>
+      <span class="legend-label">${d.label}</span>
+      <span class="legend-val">${d.value} subject${d.value>1?'s':''}</span>
+    </li>
+  `).join('');
+
+  /* ---- Study Hours ---- */
+  new Chart(document.getElementById('studyHoursChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+      datasets: [{
+        label: 'This Week (hrs)',
+        data: [3.5, 2.0, 4.5, 3.0, 5.0, 6.5, 2.5],
+        borderColor: '#0fa968',
+        backgroundColor: 'rgba(15,169,104,0.1)',
+        borderWidth: 2.5,
+        tension: 0.4, fill: true,
+        pointBackgroundColor:'#0fa968', pointRadius:5,
+      },{
+        label: 'Last Week (hrs)',
+        data: [2.0, 3.5, 3.0, 4.0, 3.5, 5.0, 1.5],
+        borderColor:'#1a56db',
+        borderDash:[5,4], borderWidth:2,
+        tension:0.4, fill:false,
+        pointBackgroundColor:'#1a56db', pointRadius:4,
+      }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:true,
+      plugins:{ legend:{ position:'top', labels:{ boxWidth:12, padding:12 } } },
+      scales:{
+        y:{ beginAtZero:true, ticks:{ callback: v => v + 'h' }, grid:{ color:'#eaf0fb' } },
+        x:{ grid:{ display:false } }
+      }
+    }
+  });
+
+  /* ---- Scorecard Table ---- */
+  const scorecard = [
+    { subj:'Data Structures', mid:42, final:46, score:88, grade:'A' },
+    { subj:'DBMS',            mid:36, final:39, score:75, grade:'B+' },
+    { subj:'Computer Networks',mid:46,final:46, score:92, grade:'O' },
+    { subj:'Operating Systems',mid:32,final:36, score:68, grade:'B' },
+    { subj:'Software Engg.',  mid:40, final:41, score:81, grade:'A' },
+    { subj:'Machine Learning', mid:37,final:40, score:77, grade:'B+' },
+  ];
+  document.getElementById('scorecardBody').innerHTML = scorecard.map((s, i) => {
+    const trend = s.score > 80 ? '<i class="bi bi-arrow-up-right-circle-fill text-success-en"></i>' :
+                  s.score > 70 ? '<i class="bi bi-arrow-right-circle-fill text-warning-en"></i>' :
+                  '<i class="bi bi-arrow-down-right-circle-fill text-danger-en"></i>';
+    const gradeBadge = s.score>=90?'badge-success':s.score>=80?'badge-primary':s.score>=70?'badge-warning':'badge-danger';
+    return `<tr>
+      <td style="font-weight:600;font-size:.88rem;">${s.subj}</td>
+      <td>${s.mid}/50</td>
+      <td>${s.final}/50</td>
+      <td><span style="font-weight:700;color:${s.score>=80?'#1a56db':s.score>=70?'#d97706':'#ef4444'}">${s.score}%</span></td>
+      <td><span class="badge-en ${gradeBadge}">${s.grade}</span></td>
+      <td style="text-align:center;font-size:18px;">${trend}</td>
+    </tr>`;
+  }).join('');
+</script>
+</body>
+</html>

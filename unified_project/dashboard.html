@@ -1,0 +1,337 @@
+<!-- CO1: Internet Fundamentals, HTML Structure & Basic CSS -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard – EduNexus</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <div class="app-wrapper">
+
+    <!-- Sidebar -->
+    <!-- CO2: Semantic HTML & Advanced CSS Layouts (using semantic tags like aside, main, header) -->
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <!-- Main -->
+    <div class="main-content">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="page-content">
+        <!-- Welcome Banner -->
+        <div class="mb-4 p-4 rounded-4 text-white position-relative overflow-hidden"
+          style="background:linear-gradient(135deg,#0f2b6b 0%,#1a56db 60%,#4f86f7 100%);min-height:130px;">
+          <div
+            style="position:absolute;right:-30px;top:-30px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.07);">
+          </div>
+          <div
+            style="position:absolute;right:80px;bottom:-60px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.05);">
+          </div>
+          <h4 class="fw-800 mb-1">Good morning, Alex! 👋</h4>
+          <p class="mb-3" style="opacity:.82;font-size:.93rem;">Welcome back to EduNexus. You have <strong>3 pending
+              tasks</strong> and a Pomodoro session due today.</p>
+          <div class="d-flex gap-2 flex-wrap">
+            <a href="planner.html" class="btn btn-light btn-sm fw-700 rounded-3">
+              <i class="bi bi-calendar3 me-1"></i>View Tasks
+            </a>
+            <a href="pomodoro.html" class="btn btn-sm fw-700 rounded-3"
+              style="background:rgba(255,255,255,0.18);color:#fff;border:1px solid rgba(255,255,255,0.3);">
+              <i class="bi bi-stopwatch me-1"></i>Start Focus
+            </a>
+          </div>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="row g-3 mb-4">
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="stat-card c-blue">
+              <div class="stat-icon"><i class="bi bi-award-fill"></i></div>
+              <div class="stat-body">
+                <div class="stat-label">Current CGPA</div>
+                <div class="stat-value">3.74</div>
+                <div class="stat-change"><span class="up"><i class="bi bi-arrow-up"></i> +0.08</span> vs last sem</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="stat-card c-green">
+              <div class="stat-icon"><i class="bi bi-book-fill"></i></div>
+              <div class="stat-body">
+                <div class="stat-label">Total Subjects</div>
+                <div class="stat-value">6</div>
+                <div class="stat-change">Enrolled this semester</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="stat-card c-orange">
+              <div class="stat-icon"><i class="bi bi-clipboard2-check-fill"></i></div>
+              <div class="stat-body">
+                <div class="stat-label">Pending Tasks</div>
+                <div class="stat-value">3</div>
+                <div class="stat-change"><span class="down"><i class="bi bi-arrow-down"></i> 2 due today</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="stat-card c-purple">
+              <div class="stat-icon"><i class="bi bi-clock-fill"></i></div>
+              <div class="stat-body">
+                <div class="stat-label">Today's Study Hours</div>
+                <div class="stat-value">2.5h</div>
+                <div class="stat-change"><span class="up">Target: 4h</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row: Smart Assistant + Heatmap -->
+        <div class="row g-3 mb-4">
+          <!-- Smart Academic Assistant -->
+          <div class="col-12 col-xl-6">
+            <div class="en-card h-100 assistant-card"
+              style="background: linear-gradient(145deg, #1e293b, #0f172a); color: white; border: 1px solid #334155;">
+              <div class="en-card-header" style="border-bottom: 1px solid #334155;">
+                <h5 style="color: white; display: flex; align-items: center; gap: 8px;">
+                  <span
+                    style="background: linear-gradient(135deg, #a855f7, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    <i class="bi bi-robot"></i> Smart Academic Assistant
+                  </span>
+                </h5>
+                <span class="badge"
+                  style="background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3);">AI
+                  Insights</span>
+              </div>
+              <div class="en-card-body">
+                <div id="aiInsightsContainer" class="d-flex flex-column gap-3">
+                  <!-- AI insights injected here -->
+                </div>
+                <div class="mt-4 pt-3" style="border-top: 1px solid #334155;">
+                  <a href="assistant.html" class="btn btn-sm w-100"
+                    style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); font-weight: 600;">
+                    <i class="bi bi-chat-dots me-2"></i>Open Assistant Chat
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Study Heatmap -->
+          <div class="col-12 col-xl-6">
+            <div class="en-card h-100">
+              <div class="en-card-header">
+                <h5><i class="bi bi-calendar3-range me-2 text-success-en"></i>Study Consistency Heatmap</h5>
+              </div>
+              <div class="en-card-body pt-2 pb-3">
+                <div class="d-flex justify-content-between align-items-end mb-2">
+                  <div>
+                    <div
+                      style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">
+                      Current Streak</div>
+                    <div style="font-size: 1.4rem; font-weight: 800; color: var(--success); line-height: 1;">12 Days <i
+                        class="bi bi-fire text-warning"></i></div>
+                  </div>
+                  <div class="text-end">
+                    <div
+                      style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">
+                      Total Studies</div>
+                    <div style="font-size: 1.4rem; font-weight: 800; color: var(--dark); line-height: 1;">148 Sessions
+                    </div>
+                  </div>
+                </div>
+                <div class="heatmap-container mt-3" style="overflow-x: auto; padding-bottom: 8px;">
+                  <!-- Generate a 7x15 grid of squares for the heatmap -->
+                  <div id="studyHeatmapGrid"
+                    style="display: grid; grid-template-rows: repeat(7, 12px); grid-auto-flow: column; gap: 4px; grid-auto-columns: 12px;">
+                    <!-- Squares injected by JS -->
+                  </div>
+                </div>
+                <div class="d-flex align-items-center justify-content-end gap-2 mt-2"
+                  style="font-size: 0.75rem; color: var(--text-muted);">
+                  <span>Less</span>
+                  <div style="width: 12px; height: 12px; border-radius: 3px; background: #ebedf0;"></div>
+                  <div style="width: 12px; height: 12px; border-radius: 3px; background: #9be9a8;"></div>
+                  <div style="width: 12px; height: 12px; border-radius: 3px; background: #40c463;"></div>
+                  <div style="width: 12px; height: 12px; border-radius: 3px; background: #30a14e;"></div>
+                  <div style="width: 12px; height: 12px; border-radius: 3px; background: #216e39;"></div>
+                  <span>More</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row: Subject Progress + Activity -->
+        <div class="row g-3 mb-4">
+          <!-- Subject Progress -->
+          <div class="col-12 col-lg-7">
+            <div class="en-card h-100">
+              <div class="en-card-header">
+                <h5><i class="bi bi-graph-up me-2 text-primary-en"></i>Subject Performance</h5>
+                <a href="analytics.html" class="btn-en btn-en-outline btn-en-sm">Full Report</a>
+              </div>
+              <div class="en-card-body">
+                <div id="subjectList"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="col-12 col-lg-5">
+            <div class="en-card h-100">
+              <div class="en-card-header">
+                <h5><i class="bi bi-activity me-2 text-primary-en"></i>Recent Activity</h5>
+              </div>
+              <div class="en-card-body">
+                <ul class="activity-list" id="activityList"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row: Quick Actions + Upcoming -->
+        <div class="row g-3">
+          <!-- Quick Actions -->
+          <div class="col-12 col-md-6">
+            <div class="en-card">
+              <div class="en-card-header">
+                <h5><i class="bi bi-lightning-fill me-2 text-warning-en"></i>Quick Actions</h5>
+              </div>
+              <div class="en-card-body">
+                <div class="row g-2">
+                  <div class="col-6">
+                    <a href="cgpa.html" class="d-flex align-items-center gap-2 p-3 rounded-3 text-decoration-none"
+                      style="background:#e8f0fe;color:#1a56db;transition:.2s;"
+                      onmouseover="this.style.background='#d0e3ff'" onmouseout="this.style.background='#e8f0fe'">
+                      <i class="bi bi-calculator-fill fs-5"></i>
+                      <span style="font-weight:700;font-size:.88rem;">CGPA Calc</span>
+                    </a>
+                  </div>
+                  <div class="col-6">
+                    <a href="planner.html" class="d-flex align-items-center gap-2 p-3 rounded-3 text-decoration-none"
+                      style="background:#d1fae5;color:#065f46;transition:.2s;"
+                      onmouseover="this.style.background='#a7f3d0'" onmouseout="this.style.background='#d1fae5'">
+                      <i class="bi bi-calendar3 fs-5"></i>
+                      <span style="font-weight:700;font-size:.88rem;">Add Task</span>
+                    </a>
+                  </div>
+                  <div class="col-6">
+                    <a href="analytics.html" class="d-flex align-items-center gap-2 p-3 rounded-3 text-decoration-none"
+                      style="background:#ede9fe;color:#5b21b6;transition:.2s;"
+                      onmouseover="this.style.background='#ddd6fe'" onmouseout="this.style.background='#ede9fe'">
+                      <i class="bi bi-bar-chart-fill fs-5"></i>
+                      <span style="font-weight:700;font-size:.88rem;">Analytics</span>
+                    </a>
+                  </div>
+                  <div class="col-6">
+                    <a href="smart-focus.html"
+                      class="d-flex align-items-center gap-2 p-3 rounded-3 text-decoration-none"
+                      style="background:#fef3c7;color:#92400e;transition:.2s;"
+                      onmouseover="this.style.background='#fde68a'" onmouseout="this.style.background='#fef3c7'">
+                      <i class="bi bi-stopwatch-fill fs-5"></i>
+                      <span style="font-weight:700;font-size:.88rem;">Smart Focus</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Upcoming Deadlines -->
+          <div class="col-12 col-md-6">
+            <div class="en-card">
+              <div class="en-card-header">
+                <h5><i class="bi bi-alarm-fill me-2 text-danger-en"></i>Upcoming Deadlines</h5>
+                <a href="planner.html" class="btn-en btn-en-outline btn-en-sm">View All</a>
+              </div>
+              <div class="en-card-body p-0">
+                <div id="deadlineList"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    // CO4: DOM Manipulation, Events & API Integration (Dynamic generation of UI)
+    initLayout('dashboard', 'Dashboard', 'EduNexus / Dashboard');
+
+    // Subject progress data
+    const subjects = [
+      { name: 'Data Structures & Algorithms', score: 88, grade: 'A' },
+      { name: 'Database Management Systems', score: 75, grade: 'B+' },
+      { name: 'Computer Networks', score: 92, grade: 'A+' },
+      { name: 'Operating Systems', score: 68, grade: 'B' },
+      { name: 'Software Engineering', score: 81, grade: 'A-' },
+      { name: 'Machine Learning', score: 77, grade: 'B+' },
+    ];
+
+    const colorMap = { 'A+': ['#0fa968', '#d1fae5'], 'A': ['#1a56db', '#dbeafe'], 'A-': ['#7c3aed', '#ede9fe'], 'B+': ['#f59e0b', '#fef3c7'], 'B': ['#e67e22', '#fde8cc'], 'C': ['#ef4444', '#fee2e2'] };
+
+    document.getElementById('subjectList').innerHTML = subjects.map(s => {
+      const [clr, bg] = colorMap[s.grade] || ['#6c757d', '#f1f5f9'];
+      return `
+      <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span style="font-size:.88rem;font-weight:600;color:var(--dark)">${s.name}</span>
+          <span class="badge-en" style="background:${bg};color:${clr};">${s.grade} · ${s.score}%</span>
+        </div>
+        <div class="en-progress">
+          <div class="en-progress-bar" style="width:${s.score}%;background:linear-gradient(90deg,${clr},${clr}aa);"></div>
+        </div>
+      </div>`;
+    }).join('');
+
+    // Activity feed
+    const activities = [
+      { icon: 'calculator-fill', bg: '#e8f0fe', color: '#1a56db', title: 'CGPA Updated', meta: '3.74 — 2 hours ago' },
+      { icon: 'check2-circle', bg: '#d1fae5', color: '#059669', title: 'Task Completed: OS Assignment', meta: 'Yesterday' },
+      { icon: 'stopwatch-fill', bg: '#ede9fe', color: '#7c3aed', title: 'Pomodoro — 4 sessions', meta: 'Yesterday' },
+      { icon: 'journal-text', bg: '#fef3c7', color: '#d97706', title: 'Added: ML Lab Report task', meta: '2 days ago' },
+      { icon: 'bar-chart-fill', bg: '#fce7f3', color: '#be185d', title: 'Analytics report generated', meta: '3 days ago' },
+    ];
+
+    document.getElementById('activityList').innerHTML = activities.map(a => `
+    <li class="activity-item">
+      <div class="activity-icon" style="background:${a.bg};color:${a.color};">
+        <i class="bi bi-${a.icon}"></i>
+      </div>
+      <div class="activity-text">
+        <div class="activity-title">${a.title}</div>
+        <div class="activity-meta">${a.meta}</div>
+      </div>
+    </li>
+  `).join('');
+
+    // Deadlines
+    const deadlines = [
+      { task: 'ML Lab Report', subj: 'Machine Learning', due: 'Today', badge: 'danger' },
+      { task: 'Network Simulation', subj: 'Computer Networks', due: 'Tomorrow', badge: 'warning' },
+      { task: 'DB ER Diagram', subj: 'DBMS', due: 'Feb 27', badge: 'primary' },
+    ];
+
+    document.getElementById('deadlineList').innerHTML = deadlines.map((d, i) => `
+    <div class="d-flex align-items-center gap-3 px-4 py-3 ${i < deadlines.length - 1 ? 'border-bottom' : ''}">
+      <div style="width:4px;height:40px;border-radius:4px;background:${d.badge === 'danger' ? '#ef4444' : d.badge === 'warning' ? '#f59e0b' : '#1a56db'};flex-shrink:0;"></div>
+      <div class="flex-1" style="flex:1;">
+        <div style="font-weight:600;font-size:.88rem;">${d.task}</div>
+        <div style="font-size:.76rem;color:var(--text-muted);">${d.subj}</div>
+      </div>
+      <span class="badge-en badge-${d.badge}">${d.due}</span>
+    </div>
+  `).join('');
+  </script>
+</body>
+
+</html>

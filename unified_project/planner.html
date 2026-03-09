@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study Planner – EduNexus</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <div class="app-wrapper">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main-content">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="page-content">
+        <div class="section-header">
+          <h2><i class="bi bi-calendar3 me-2 text-primary-en"></i>Study Planner</h2>
+          <p>Organize your academic tasks, track deadlines, and stay on top of your studies.</p>
+        </div>
+
+        <div class="row g-4">
+          <!-- Add Task Form -->
+          <div class="col-12 col-lg-4">
+            <div class="en-card" style="position:sticky;top:80px;">
+              <div class="en-card-header">
+                <h5><i class="bi bi-plus-square-fill me-2 text-primary-en"></i>Add New Task</h5>
+              </div>
+              <div class="en-card-body">
+                <form id="taskForm" novalidate>
+                  <div class="en-form-group">
+                    <label class="en-label">Task Name <span style="color:#ef4444;">*</span></label>
+                    <input type="text" class="en-input" id="taskName" placeholder="e.g. Complete ML Assignment"
+                      required />
+                  </div>
+
+                  <div class="en-form-group">
+                    <label class="en-label">Subject <span style="color:#ef4444;">*</span></label>
+                    <select class="en-input en-select" id="taskSubject" required>
+                      <option value="">-- Select Subject --</option>
+                      <option>Data Structures & Algorithms</option>
+                      <option>Database Management Systems</option>
+                      <option>Computer Networks</option>
+                      <option>Operating Systems</option>
+                      <option>Software Engineering</option>
+                      <option>Machine Learning</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+
+                  <div class="en-form-group">
+                    <label class="en-label">Priority</label>
+                    <select class="en-input en-select" id="taskPriority">
+                      <option value="high">🔴 High Priority</option>
+                      <option value="medium" selected>🟡 Medium Priority</option>
+                      <option value="low">🟢 Low Priority</option>
+                    </select>
+                  </div>
+
+                  <div class="en-form-group">
+                    <label class="en-label">Deadline <span style="color:#ef4444;">*</span></label>
+                    <input type="date" class="en-input" id="taskDeadline" required />
+                  </div>
+
+                  <div class="en-form-group">
+                    <label class="en-label">Description (Optional)</label>
+                    <textarea class="en-input" id="taskDesc" rows="2" placeholder="Additional notes…"
+                      style="resize:none;"></textarea>
+                  </div>
+
+                  <button type="submit" class="btn-en btn-en-primary" style="width:100%;">
+                    <i class="bi bi-plus-lg"></i> Add Task
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            <!-- Summary Stats -->
+            <div class="en-card mt-3">
+              <div class="en-card-body">
+                <div class="row g-2 text-center">
+                  <div class="col-4">
+                    <div style="font-size:1.6rem;font-weight:900;color:var(--primary);" id="countTotal">0</div>
+                    <div style="font-size:.72rem;color:var(--text-muted);font-weight:600;">Total</div>
+                  </div>
+                  <div class="col-4">
+                    <div style="font-size:1.6rem;font-weight:900;color:#059669;" id="countDone">0</div>
+                    <div style="font-size:.72rem;color:var(--text-muted);font-weight:600;">Completed</div>
+                  </div>
+                  <div class="col-4">
+                    <div style="font-size:1.6rem;font-weight:900;color:#f59e0b;" id="countPending">0</div>
+                    <div style="font-size:.72rem;color:var(--text-muted);font-weight:600;">Pending</div>
+                  </div>
+                </div>
+                <div class="en-progress mt-3">
+                  <div class="en-progress-bar" id="progressBar" style="width:0%;"></div>
+                </div>
+                <div style="font-size:.76rem;color:var(--text-muted);text-align:right;margin-top:4px;"
+                  id="progressLabel">0% complete</div>
+              </div>
+            </div>
+            <!-- Daily Habits Tracker -->
+            <div class="en-card mt-4">
+              <div class="en-card-header" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
+                <h5 class="text-white mb-0"><i class="bi bi-droplet-fill me-2"></i>Daily Habits</h5>
+              </div>
+              <div class="en-card-body p-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Today's Progress</span>
+                  <span class="badge" style="background: #ecfdf5; color: #059669; border: 1px solid #10b981;"
+                    id="habitScoreBadge">0%</span>
+                </div>
+                <div class="en-progress mb-3" style="height: 6px;">
+                  <div class="en-progress-bar" id="habitProgressBar"
+                    style="width: 0%; background: linear-gradient(90deg, #34d399, #10b981);"></div>
+                </div>
+
+                <div class="d-flex flex-column gap-2" id="habitList">
+                  <!-- Habits injected by JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Task List -->
+          <div class="col-12 col-lg-8">
+            <!-- Filter Bar -->
+            <div class="d-flex align-items-center gap-2 flex-wrap mb-3">
+              <div class="d-flex gap-1 flex-wrap" id="filterBtns">
+                <button class="btn-en btn-en-primary btn-en-sm filter-btn active" data-filter="all">All</button>
+                <button class="btn-en btn-en-outline btn-en-sm filter-btn" data-filter="pending">Pending</button>
+                <button class="btn-en btn-en-outline btn-en-sm filter-btn" data-filter="completed">Completed</button>
+                <button class="btn-en btn-en-outline btn-en-sm filter-btn" data-filter="high">High Priority</button>
+              </div>
+              <div class="ms-auto">
+                <input type="text" class="en-input" id="searchTask" placeholder="Search tasks…"
+                  style="width:200px;padding:7px 12px;font-size:.85rem;" />
+              </div>
+            </div>
+
+            <!-- Tasks Table -->
+            <div class="en-card">
+              <div class="en-card-header">
+                <h5><i class="bi bi-list-task me-2 text-primary-en"></i>Task List</h5>
+                <button class="btn-en btn-en-danger btn-en-sm" id="clearCompletedBtn">
+                  <i class="bi bi-trash3"></i> Clear Completed
+                </button>
+              </div>
+              <div class="en-card-body p-0">
+                <div class="table-responsive">
+                  <table class="en-table" id="taskTable">
+                    <thead>
+                      <tr>
+                        <th style="width:44px;"></th>
+                        <th>Task</th>
+                        <th>Subject</th>
+                        <th>Priority</th>
+                        <th>Deadline</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="taskBody"></tbody>
+                  </table>
+                </div>
+                <div id="emptyTask" class="empty-state">
+                  <i class="bi bi-clipboard2-x d-block"></i>
+                  <p>No tasks yet. Add your first task using the form!</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Calendar-style week view -->
+            <div class="en-card mt-4">
+              <div class="en-card-header">
+                <h5><i class="bi bi-calendar-week-fill me-2 text-primary-en"></i>This Week's Tasks</h5>
+              </div>
+              <div class="en-card-body">
+                <div class="d-flex gap-2 overflow-auto pb-1" id="weekView"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    initLayout('planner', 'Study Planner', 'EduNexus / Study Planner');
+
+    // Set default deadline to today
+    const today = new Date();
+    document.getElementById('taskDeadline').value = today.toISOString().split('T')[0];
+    document.getElementById('taskDeadline').min = today.toISOString().split('T')[0];
+
+    let tasks = [
+      { id: 1, name: 'ML Lab Report', subject: 'Machine Learning', priority: 'high', deadline: '2026-02-23', desc: '', completed: false },
+      { id: 2, name: 'Network Simulation', subject: 'Computer Networks', priority: 'medium', deadline: '2026-02-24', desc: '', completed: false },
+      { id: 3, name: 'DB ER Diagram', subject: 'Database Management Systems', priority: 'medium', deadline: '2026-02-27', desc: '', completed: false },
+      { id: 4, name: 'OS Assignment 3', subject: 'Operating Systems', priority: 'low', deadline: '2026-03-01', desc: '', completed: true },
+      { id: 5, name: 'DSA Practice Set', subject: 'Data Structures & Algorithms', priority: 'high', deadline: '2026-02-25', desc: '', completed: false },
+    ];
+    let nextId = 6;
+    let currentFilter = 'all';
+
+    const PRIORITY_BADGE = {
+      high: '<span class="badge-en badge-danger"><i class="bi bi-circle-fill me-1" style="font-size:.5rem;"></i>High</span>',
+      medium: '<span class="badge-en badge-warning"><i class="bi bi-circle-fill me-1" style="font-size:.5rem;"></i>Medium</span>',
+      low: '<span class="badge-en badge-muted"><i class="bi bi-circle-fill me-1" style="font-size:.5rem;"></i>Low</span>',
+    };
+
+    function getDeadlineBadge(dl, completed) {
+      if (completed) return '<span class="badge-en badge-success">Done</span>';
+      const d = new Date(dl), t = new Date(today.toDateString());
+      const diff = Math.ceil((d - t) / 86400000);
+      if (diff < 0) return '<span class="badge-en badge-danger">Overdue</span>';
+      if (diff === 0) return '<span class="badge-en badge-danger">Today</span>';
+      if (diff === 1) return '<span class="badge-en badge-warning">Tomorrow</span>';
+      return `<span class="badge-en badge-primary">In ${diff} days</span>`;
+    }
+
+    function formatDate(d) {
+      const dt = new Date(d + 'T12:00:00');
+      return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function renderTasks() {
+      const search = document.getElementById('searchTask').value.toLowerCase();
+      let filtered = tasks.filter(t => {
+        if (currentFilter === 'pending') return !t.completed;
+        if (currentFilter === 'completed') return t.completed;
+        if (currentFilter === 'high') return t.priority === 'high' && !t.completed;
+        return true;
+      }).filter(t => t.name.toLowerCase().includes(search) || t.subject.toLowerCase().includes(search));
+
+      const body = document.getElementById('taskBody');
+      const empty = document.getElementById('emptyTask');
+
+      if (filtered.length === 0) {
+        body.innerHTML = '';
+        empty.style.display = 'block';
+      } else {
+        empty.style.display = 'none';
+        body.innerHTML = filtered.map(t => `
+        <tr class="${t.completed ? 'opacity-50' : ''}">
+          <td>
+            <button class="btn-en btn-en-sm" style="background:${t.completed ? '#d1fae5' : '#f0f4fb'};color:${t.completed ? '#059669' : '#94a3b8'};padding:5px 8px;border-radius:8px;"
+                    onclick="toggleTask(${t.id})" title="${t.completed ? 'Mark pending' : 'Mark complete'}">
+              <i class="bi bi-${t.completed ? 'check-circle-fill' : 'circle'}"></i>
+            </button>
+          </td>
+          <td>
+            <div style="font-weight:600;font-size:.9rem;${t.completed ? 'text-decoration:line-through;' : ''}">${t.name}</div>
+            ${t.desc ? `<div style="font-size:.76rem;color:var(--text-muted);">${t.desc}</div>` : ''}
+          </td>
+          <td><span style="font-size:.82rem;color:var(--text-muted);">${t.subject}</span></td>
+          <td>${PRIORITY_BADGE[t.priority]}</td>
+          <td><span style="font-size:.85rem;">${formatDate(t.deadline)}</span></td>
+          <td>${getDeadlineBadge(t.deadline, t.completed)}</td>
+          <td>
+            <button class="btn-en btn-en-danger btn-en-sm" onclick="deleteTask(${t.id})" title="Delete">
+              <i class="bi bi-trash3"></i>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+      }
+
+      // Update stats
+      const total = tasks.length;
+      const done = tasks.filter(t => t.completed).length;
+      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+      document.getElementById('countTotal').textContent = total;
+      document.getElementById('countDone').textContent = done;
+      document.getElementById('countPending').textContent = total - done;
+      document.getElementById('progressBar').style.width = pct + '%';
+      document.getElementById('progressLabel').textContent = pct + '% complete';
+
+      renderWeekView();
+    }
+
+    // --- Habit Tracker Logic ---
+    const habits = [
+      { id: 'h1', text: 'Sleep 7-8 hours 💤', done: false },
+      { id: 'h2', text: 'Drink 2L water 💧', done: true },
+      { id: 'h3', text: 'Study ≥ 2 hours 💻', done: false },
+      { id: 'h4', text: 'Exercise 30 minutes 🏋🏻‍♀️', done: false },
+      { id: 'h5', text: 'Read 30 minutes 📖', done: true },
+      { id: 'h6', text: 'Journal & reflect 🖋️', done: false }
+    ];
+
+    function renderHabits() {
+      const container = document.getElementById('habitList');
+      const doneCount = habits.filter(h => h.done).length;
+      const pct = Math.round((doneCount / habits.length) * 100);
+
+      document.getElementById('habitScoreBadge').textContent = pct + '%';
+      document.getElementById('habitProgressBar').style.width = pct + '%';
+
+      // Notion rule: "To Consider it as a Day you should at least do more than 75% of the habits"
+      if (pct >= 75) {
+        document.getElementById('habitScoreBadge').innerHTML = '<i class="bi bi-star-fill text-warning me-1"></i> ' + pct + '% - Day Won!';
+      }
+
+      container.innerHTML = habits.map(h => `
+      <div class="d-flex align-items-center justify-content-between p-2 rounded-3" style="background: ${h.done ? '#ecfdf5' : '#f8faff'}; border: 1px solid ${h.done ? '#a7f3d0' : '#e2e8f0'}; transition: 0.2s;">
+        <span style="font-size: 0.88rem; font-weight: 500; color: ${h.done ? '#065f46' : 'var(--dark)'}; text-decoration: ${h.done ? 'line-through' : 'none'}">${h.text}</span>
+        <button class="btn btn-sm" onclick="toggleHabit('${h.id}')" style="background: ${h.done ? '#10b981' : '#e2e8f0'}; color: ${h.done ? 'white' : '#64748b'}; padding: 2px 6px; border-radius: 6px;">
+          <i class="bi bi-${h.done ? 'check2' : 'circle'}"></i>
+        </button>
+      </div>
+    `).join('');
+    }
+
+    function toggleHabit(id) {
+      const h = habits.find(x => x.id === id);
+      if (h) {
+        h.done = !h.done;
+        renderHabits();
+      }
+    }
+
+    renderHabits();
+
+    function toggleTask(id) {
+      const t = tasks.find(x => x.id === id);
+      if (t) {
+        t.completed = !t.completed;
+        showToast(t.completed ? 'Task marked complete!' : 'Task marked pending.', t.completed ? 'success' : 'warning');
+        renderTasks();
+      }
+    }
+
+    function deleteTask(id) {
+      tasks = tasks.filter(x => x.id !== id);
+      showToast('Task deleted.', 'danger');
+      renderTasks();
+    }
+
+    document.getElementById('taskForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('taskName').value.trim();
+      const subject = document.getElementById('taskSubject').value;
+      const priority = document.getElementById('taskPriority').value;
+      const deadline = document.getElementById('taskDeadline').value;
+      const desc = document.getElementById('taskDesc').value.trim();
+      if (!name || !subject || !deadline) { showToast('Please fill required fields.', 'danger'); return; }
+      tasks.unshift({ id: nextId++, name, subject, priority, deadline, desc, completed: false });
+      e.target.reset();
+      document.getElementById('taskDeadline').value = today.toISOString().split('T')[0];
+      showToast('Task added successfully!');
+      renderTasks();
+    });
+
+    document.getElementById('clearCompletedBtn').addEventListener('click', () => {
+      const before = tasks.length;
+      tasks = tasks.filter(t => !t.completed);
+      showToast(`${before - tasks.length} completed tasks removed.`, 'warning');
+      renderTasks();
+    });
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.filter-btn').forEach(b => {
+          b.classList.remove('btn-en-primary'); b.classList.add('btn-en-outline');
+        });
+        this.classList.add('btn-en-primary'); this.classList.remove('btn-en-outline');
+        currentFilter = this.dataset.filter;
+        renderTasks();
+      });
+    });
+
+    document.getElementById('searchTask').addEventListener('input', renderTasks);
+
+    function renderWeekView() {
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const weekDays = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date(today);
+        d.setDate(today.getDate() + i);
+        return d;
+      });
+      document.getElementById('weekView').innerHTML = weekDays.map(d => {
+        const ds = d.toISOString().split('T')[0];
+        const dayTasks = tasks.filter(t => t.deadline === ds && !t.completed);
+        const isToday = ds === today.toISOString().split('T')[0];
+        return `
+        <div style="min-width:100px;flex-shrink:0;background:${isToday ? 'linear-gradient(135deg,#1a56db,#4f86f7)' : '#f8faff'};
+             border-radius:14px;padding:14px 12px;border:1.5px solid ${isToday ? 'transparent' : '#e4eaf5'};
+             text-align:center;">
+          <div style="font-size:.72rem;font-weight:700;color:${isToday ? 'rgba(255,255,255,.75)' : 'var(--text-muted)'};letter-spacing:.5px;">${days[d.getDay()]}</div>
+          <div style="font-size:1.3rem;font-weight:900;color:${isToday ? '#fff' : 'var(--dark)'};">${d.getDate()}</div>
+          ${dayTasks.length > 0
+            ? `<div style="margin-top:6px;"><span class="badge-en" style="background:${isToday ? 'rgba(255,255,255,.25)' : '#dbeafe'};color:${isToday ? '#fff' : '#1e40af'};font-size:.7rem;">${dayTasks.length} task${dayTasks.length > 1 ? 's' : ''}</span></div>`
+            : `<div style="font-size:.7rem;color:${isToday ? 'rgba(255,255,255,.5)' : '#c1cfe8'};margin-top:8px;">Free</div>`}
+        </div>
+      `;
+      }).join('');
+    }
+
+    renderTasks();
+  </script>
+</body>
+
+</html>
